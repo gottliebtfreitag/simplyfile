@@ -21,11 +21,11 @@ void normalize(struct timespec& time) {
 }
 
 Timer::Timer(std::chrono::nanoseconds duration, bool oneShot, int flags)
-	: FileDescriptor(::timerfd_create(CLOCK_REALTIME, flags))
+	: FileDescriptor(::timerfd_create(CLOCK_MONOTONIC, flags))
 {
 	struct itimerspec new_value {};
 	struct timespec now;
-	if (clock_gettime(CLOCK_REALTIME, &now) == -1) {
+	if (clock_gettime(CLOCK_MONOTONIC, &now) == -1) {
 		throw std::runtime_error("cannot get the current time");
 	}
 
