@@ -205,7 +205,7 @@ void Epoll::dispatch(std::vector<struct epoll_event> const& events) {
 			try {
 				wrapper.info->cb(wrapper.event.events);
 			} catch (...) {
-				std::throw_with_nested(std::runtime_error(demangle(wrapper.info->cb.target_type()) + " threw and exception:"));
+				std::throw_with_nested(std::runtime_error(demangle(wrapper.info->cb.target_type()) + " threw an exception:"));
 			}
 		}
 	}
