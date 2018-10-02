@@ -31,6 +31,21 @@ std::string demangle(std::type_info const& ti) {
 	return demangledName;
 }
 
+std::string removeAnonNamespace(std::string const& in_str) {
+	size_t index = 0;
+	std::string str = in_str;
+	std::string toReplace = "(anonymous namespace)::";
+	while (true) {
+	     index = str.find(toReplace, index);
+	     if (index == std::string::npos) {
+	    	 break;
+	     }
+	     str.replace(index, toReplace.size(), "");
+	     index += toReplace.size();
+	}
+	return str;
+}
+
 
 template<typename Func>
 struct Finally final {
@@ -60,6 +75,11 @@ struct CallbackInfo {
 
 	std::mutex mutex;
 	std::condition_variable cv {};
+
+	std::string name;
+	std::atomic<Epoll::RuntimeInfo> accumulatedRuntime;
+
+	CallbackInfo(std::string const& _name) : name{_name} {}
 
 	bool startExecution() {
 		std::lock_guard lock(mutex);
@@ -92,6 +112,7 @@ struct CallbackInfo {
 struct Epoll::Pimpl {
 	std::shared_mutex infosMutex;
 	std::map<int, std::shared_ptr<CallbackInfo>> infos;
+	std::map<std::string, std::atomic<std::chrono::nanoseconds>> runtimes;
 	Event eventFD{EFD_SEMAPHORE};
 };
 
@@ -105,7 +126,7 @@ Epoll::Epoll()
 	addFD(pimpl->eventFD, [=](int){
 		pimpl->eventFD.get();
 		modFD(pimpl->eventFD, EPOLLIN|EPOLLONESHOT);
-	}, EPOLLIN|EPOLLONESHOT);
+	}, EPOLLIN|EPOLLONESHOT, "self_wakeup");
 }
 
 Epoll::Epoll(Epoll &&other)
@@ -121,12 +142,16 @@ Epoll& Epoll::operator=(Epoll &&rhs) {
 
 Epoll::~Epoll() {}
 
-void Epoll::addFD(int _fd, Callback const& callback, int epollFlags) {
+void Epoll::addFD(int _fd, Callback const& callback, int epollFlags, std::string const& name) {
 	std::shared_ptr<CallbackInfo> info;
+	std::string _name = name;
+	if (_name == "") {
+		_name = removeAnonNamespace(demangle(callback.target_type()));
+	}
 	{
 		std::lock_guard lock{pimpl->infosMutex};
-		info = pimpl->infos[_fd] = std::make_shared<CallbackInfo>(); // this and the next line could be a beautiful one liner if...gcc5.4 would not be used
-		pimpl->infos.at(_fd)->cb = callback;
+		info = pimpl->infos[_fd] = std::make_shared<CallbackInfo>(_name); // this and the next line could be a beautiful one liner if...gcc5.4 would not be used
+		info->cb = callback;
 	}
 	struct epoll_event event {};
 	event.events = epollFlags;
@@ -201,11 +226,18 @@ void Epoll::dispatch(std::vector<struct epoll_event> const& events) {
 	}
 	for (auto const& wrapper : wrappers) {
 		if (wrapper.info->startExecution()) {
-			auto finally = makeFinally([=]{wrapper.info->stopExecution();});
 			try {
+				auto start = std::chrono::high_resolution_clock::now();
+				auto finally = makeFinally([=] {
+					auto end = std::chrono::high_resolution_clock::now();
+					Epoll::RuntimeInfo expected = wrapper.info->accumulatedRuntime.load(std::memory_order_relaxed);
+					Epoll::RuntimeInfo delta{end - start, 1};
+					while (not wrapper.info->accumulatedRuntime.compare_exchange_weak(expected, expected + delta));
+					wrapper.info->stopExecution();
+				});
 				wrapper.info->cb(wrapper.event.events);
 			} catch (...) {
-				std::throw_with_nested(std::runtime_error(demangle(wrapper.info->cb.target_type()) + " threw an exception:"));
+				std::throw_with_nested(std::runtime_error(removeAnonNamespace(demangle(wrapper.info->cb.target_type())) + " threw an exception:"));
 			}
 		}
 	}
@@ -214,5 +246,15 @@ void Epoll::dispatch(std::vector<struct epoll_event> const& events) {
 void Epoll::wakeup(uint64_t count) {
 	pimpl->eventFD.put(count);
 }
+
+auto Epoll::getRuntimes() const -> std::map<std::string, RuntimeInfo>{
+	std::map<std::string, RuntimeInfo> runtimes;
+	std::shared_lock lock{pimpl->infosMutex};
+	for (auto const& info : pimpl->infos) {
+		runtimes[info.second->name] += info.second->accumulatedRuntime.load(std::memory_order_relaxed);
+	}
+	return runtimes;
+}
+
 
 }

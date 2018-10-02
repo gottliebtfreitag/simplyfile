@@ -119,4 +119,3 @@ void SerialPort::setBaudrate(int baudrate) {
 }
 
 }
-

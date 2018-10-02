@@ -1,13 +1,14 @@
 #pragma once
 
-#include <unistd.h>
-#include <functional>
-#include <vector>
-#include <map>
 #include <fcntl.h>
+#include <functional>
+#include <map>
+#include <sys/ioctl.h>
+#include <sys/un.h>
+#include <unistd.h>
+#include <vector>
 
-namespace simplyfile
-{
+namespace simplyfile {
 
 struct FileDescriptor {
 
@@ -33,8 +34,8 @@ struct FileDescriptor {
 		close();
 	}
 
-	bool valid() {
-		return fd > 0;
+	bool valid() const {
+		return fd >= 0;
 	}
 
 	operator int() const {
@@ -61,4 +62,12 @@ struct FileDescriptor {
 private:
 	int fd;
 };
+
+void write(FileDescriptor const& _fd, std::vector<std::byte> const& txBuf);
+[[nodiscard]] auto read(FileDescriptor const& _fd, size_t maxReadBytes, bool singleRead=false) -> std::vector<std::byte>;
+[[nodiscard]] auto read(FileDescriptor const& _fd) -> std::vector<std::byte>;
+[[nodiscard]] auto getAvailableBytes(FileDescriptor const& _fd) -> size_t;
+size_t flushRead(FileDescriptor const& _fd);
+
+
 }

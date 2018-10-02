@@ -16,4 +16,5 @@ struct SerialPort : FileDescriptor
 	void setBaudrate(int baudrate);
 };
 
+
 }

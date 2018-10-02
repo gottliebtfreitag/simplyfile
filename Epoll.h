@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <sys/epoll.h>
+#include <chrono>
 
 namespace simplyfile
 {
@@ -16,7 +17,7 @@ struct Epoll : FileDescriptor {
 	Epoll& operator=(Epoll &&rhs);
 	~Epoll();
 
-	void addFD(int fd, Callback const& callback, int epollFlags = EPOLLIN|EPOLLET);
+	void addFD(int fd, Callback const& callback, int epollFlags = EPOLLIN|EPOLLET, std::string const& name="");
 	void modFD(int fd, int epollFlags = EPOLLIN|EPOLLET);
 	void rmFD(int fd, bool blocking);
 
@@ -32,6 +33,36 @@ struct Epoll : FileDescriptor {
 
 	// wakes up count thread that is calling wait
 	void wakeup(uint64_t count=1);
+
+	struct RuntimeInfo {
+		std::chrono::nanoseconds accumulatedRuntime {0};
+		int64_t numExecutions {0};
+		RuntimeInfo& operator+=(RuntimeInfo const& rhs) {
+			accumulatedRuntime += rhs.accumulatedRuntime;
+			numExecutions += rhs.numExecutions;
+			return *this;
+		}
+		RuntimeInfo& operator-=(RuntimeInfo const& rhs) {
+			accumulatedRuntime -= rhs.accumulatedRuntime;
+			numExecutions -= rhs.numExecutions;
+			return *this;
+		}
+
+		RuntimeInfo operator+(RuntimeInfo const& rhs) const {
+			RuntimeInfo info{*this};
+			info.accumulatedRuntime += rhs.accumulatedRuntime;
+			info.numExecutions += rhs.numExecutions;
+			return info;
+		}
+
+		RuntimeInfo operator-(RuntimeInfo const& rhs) const {
+			RuntimeInfo info{*this};
+			info.accumulatedRuntime -= rhs.accumulatedRuntime;
+			info.numExecutions -= rhs.numExecutions;
+			return info;
+		}
+	};
+	std::map<std::string, RuntimeInfo> getRuntimes() const;
 private:
 	struct Pimpl;
 	std::unique_ptr<Pimpl> pimpl;
