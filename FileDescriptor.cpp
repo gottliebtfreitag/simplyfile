@@ -7,7 +7,7 @@
 
 namespace simplyfile {
 
-void write(FileDescriptor const& _fd, std::vector<std::byte> const& txBuf) {
+void write(FileDescriptor& _fd, std::vector<std::byte> const& txBuf) {
 	uint32_t bytesWritten = 0;
 	const size_t count = txBuf.size();
 	do {
@@ -20,7 +20,7 @@ void write(FileDescriptor const& _fd, std::vector<std::byte> const& txBuf) {
 	} while (bytesWritten < count);
 }
 
-auto read(FileDescriptor const& _fd, size_t maxReadBytes, bool singleRead) -> std::vector<std::byte> {
+auto read(FileDescriptor& _fd, size_t maxReadBytes, bool singleRead) -> std::vector<std::byte> {
 	std::vector<std::byte> rxBuf(maxReadBytes);
 
 	size_t bytesRead = 0;
@@ -40,7 +40,7 @@ auto read(FileDescriptor const& _fd, size_t maxReadBytes, bool singleRead) -> st
 	rxBuf.resize(bytesRead);
 	return rxBuf;
 }
-auto read(FileDescriptor const& _fd) -> std::vector<std::byte> {
+auto read(FileDescriptor& _fd) -> std::vector<std::byte> {
 	return read(_fd, getAvailableBytes(_fd));
 }
 
@@ -52,7 +52,7 @@ auto getAvailableBytes(FileDescriptor const& _fd) -> size_t {
 	return bytesAvailable;
 }
 
-size_t flushRead(FileDescriptor const& _fd) {
+size_t flushRead(FileDescriptor& _fd) {
 	size_t bytesRead {0};
 	uint8_t dummy;
 	ssize_t r {0};
