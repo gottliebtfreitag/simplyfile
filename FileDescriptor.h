@@ -14,11 +14,11 @@ struct FileDescriptor {
 
 	FileDescriptor(int _fd=-1) : fd(_fd) {}
 
-	FileDescriptor(FileDescriptor&& other) {
+	FileDescriptor(FileDescriptor&& other) noexcept {
 		fd = other.fd;
 		other.fd = -1;
 	}
-	FileDescriptor& operator=(FileDescriptor&& other) {
+	FileDescriptor& operator=(FileDescriptor&& other) noexcept {
 		close();
 		std::swap(fd, other.fd);
 		return *this;
@@ -34,15 +34,15 @@ struct FileDescriptor {
 		close();
 	}
 
-	bool valid() const {
+	bool valid() const noexcept {
 		return fd >= 0;
 	}
 
-	operator int() const {
+	operator int() const noexcept {
 		return fd;
 	}
 
-	void close() {
+	void close() noexcept {
 		if (valid()) {
 			::close(*this);
 			fd = -1;

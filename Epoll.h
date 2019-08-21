@@ -13,8 +13,8 @@ struct Epoll : FileDescriptor {
 	using Callback = std::function<void(int)>;
 
 	Epoll();
-	Epoll(Epoll &&other);
-	Epoll& operator=(Epoll &&rhs);
+	Epoll(Epoll &&other) noexcept;
+	Epoll& operator=(Epoll &&rhs) noexcept;
 	~Epoll();
 
 	void addFD(int fd, Callback const& callback, int epollFlags = EPOLLIN|EPOLLET, std::string const& name="");

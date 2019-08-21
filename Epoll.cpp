@@ -57,10 +57,7 @@ private:
 };
 
 template<typename Func>
-Finally<Func> makeFinally(Func && f) { return Finally<Func>(std::move(f)); }
-
-
-
+Finally(Func) -> Finally<Func>;
 
 }
 
@@ -131,12 +128,12 @@ Epoll::Epoll()
 	}, EPOLLIN|EPOLLONESHOT, "self_wakeup");
 }
 
-Epoll::Epoll(Epoll &&other)
+Epoll::Epoll(Epoll &&other) noexcept
 	: FileDescriptor(std::move(other)) {
 	std::swap(pimpl, other.pimpl);
 }
 
-Epoll& Epoll::operator=(Epoll &&rhs) {
+Epoll& Epoll::operator=(Epoll &&rhs) noexcept {
 	FileDescriptor::operator =(std::move(rhs));
 	std::swap(pimpl, rhs.pimpl);
 	return *this;
@@ -229,7 +226,7 @@ void Epoll::dispatch(std::vector<struct epoll_event> const& events) {
 		if (wrapper.info->startExecution()) {
 			try {
 				auto start = std::chrono::high_resolution_clock::now();
-				auto finally = makeFinally([=] {
+				Finally finally{[=] {
 					auto end = std::chrono::high_resolution_clock::now();
 					{
 						std::lock_guard lock{wrapper.info->runtimeMutex};
@@ -237,7 +234,7 @@ void Epoll::dispatch(std::vector<struct epoll_event> const& events) {
 						wrapper.info->accumulatedRuntime += delta;
 					}
 					wrapper.info->stopExecution();
-				});
+				}};
 				wrapper.info->cb(wrapper.event.events);
 			} catch (...) {
 				std::throw_with_nested(std::runtime_error(removeAnonNamespace(demangle(wrapper.info->cb.target_type())) + " threw an exception:"));

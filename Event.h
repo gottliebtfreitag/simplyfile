@@ -12,6 +12,9 @@ struct Event : FileDescriptor {
 		: FileDescriptor(eventfd(initval, flags))
 	{}
 
+    Event(Event&&) noexcept = default;
+    Event& operator=(Event&&) noexcept = default;
+
 	uint64_t get() {
 		uint64_t val {0};
 		if (::eventfd_read(*this, &val) != 0) {
