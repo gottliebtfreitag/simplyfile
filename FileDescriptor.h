@@ -63,11 +63,4 @@ private:
 	int fd;
 };
 
-void write(FileDescriptor& _fd, std::vector<std::byte> const& txBuf);
-[[nodiscard]] auto read(FileDescriptor& _fd, size_t maxReadBytes, bool singleRead=false) -> std::vector<std::byte>;
-[[nodiscard]] auto read(FileDescriptor& _fd) -> std::vector<std::byte>;
-[[nodiscard]] auto getAvailableBytes(FileDescriptor const& _fd) -> size_t;
-size_t flushRead(FileDescriptor& _fd);
-
-
 }

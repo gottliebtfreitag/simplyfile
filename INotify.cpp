@@ -16,8 +16,8 @@ void INotify::watch(std::string const& _path, uint32_t mask) {
 }
 
 auto INotify::readEvent() -> std::optional<INotify::Result> {
-	auto maxSize = sizeof(inotify_event) + NAME_MAX + 1;
-	auto buffer = read(static_cast<FileDescriptor&>(*this), maxSize, true);
+	std::array<std::byte, sizeof(inotify_event) + NAME_MAX + 1> buffer;
+    read(*this, buffer.data(), buffer.size());
 	inotify_event const& event = *reinterpret_cast<inotify_event const*>(buffer.data());
 
 	if (0 == event.wd) {
@@ -31,10 +31,6 @@ auto INotify::readEvent() -> std::optional<INotify::Result> {
 	}
 
 	return res;
-}
-
-auto read(INotify fd) -> std::optional<INotify::Result> {
-	return fd.readEvent();
 }
 
 }

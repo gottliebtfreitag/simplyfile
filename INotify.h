@@ -28,6 +28,4 @@ struct INotify : FileDescriptor {
 	[[nodiscard]] auto readEvent() -> std::optional<INotify::Result>;
 };
 
-[[nodiscard]] auto read(INotify fd) -> std::optional<INotify::Result>;
-
 }
