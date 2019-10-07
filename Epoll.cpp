@@ -140,7 +140,7 @@ Epoll& Epoll::operator=(Epoll &&rhs) noexcept {
 
 Epoll::~Epoll() {}
 
-void Epoll::addFD(int _fd, Callback const& callback, int epollFlags, std::string const& name) {
+void Epoll::addFD(int _fd, Callback callback, int epollFlags, std::string const& name) {
 	std::shared_ptr<CallbackInfo> info;
 	std::string _name = name;
 	if (_name == "") {
@@ -149,7 +149,7 @@ void Epoll::addFD(int _fd, Callback const& callback, int epollFlags, std::string
 	{
 		std::lock_guard lock{pimpl->infosMutex};
 		info = pimpl->infos[_fd] = std::make_shared<CallbackInfo>(_name); // this and the next line could be a beautiful one liner if...gcc5.4 would not be used
-		info->cb = callback;
+		info->cb = std::move(callback);
 	}
 	struct epoll_event event {};
 	event.events = epollFlags;
