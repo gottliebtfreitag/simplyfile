@@ -24,7 +24,7 @@ struct FileDescriptor {
 		return *this;
 	}
 
-	FileDescriptor& operator=(int _fd) {
+	FileDescriptor& operator=(int _fd) noexcept {
 		close();
 		fd = _fd;
 		return *this;
@@ -49,13 +49,13 @@ struct FileDescriptor {
 		}
 	}
 
-	void setFlags(int flags) {
+	void setFlags(int flags) noexcept {
 		fcntl(*this, F_SETFL, flags | getFlags());
 	}
-	void clearFlags(int flags) {
+	void clearFlags(int flags) noexcept {
 		fcntl(*this, F_SETFL, ~flags & getFlags());
 	}
-	int getFlags() {
+	int getFlags() noexcept {
 		return ::fcntl(*this, F_GETFL, 0);
 	}
 
