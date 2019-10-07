@@ -32,7 +32,7 @@ struct Epoll : FileDescriptor {
 	void dispatch(std::vector<struct epoll_event> const&);
 
 	// wakes up count thread that is calling wait
-	void wakeup(uint64_t count=1);
+	void wakeup(uint64_t count=1) noexcept;
 
 	struct RuntimeInfo {
 		std::chrono::nanoseconds accumulatedRuntime {0};

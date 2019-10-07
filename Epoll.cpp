@@ -55,7 +55,6 @@ struct Finally final {
 private:
 	Func _f;
 };
-
 template<typename Func>
 Finally(Func) -> Finally<Func>;
 
@@ -243,11 +242,11 @@ void Epoll::dispatch(std::vector<struct epoll_event> const& events) {
 	}
 }
 
-void Epoll::wakeup(uint64_t count) {
+void Epoll::wakeup(uint64_t count) noexcept {
 	pimpl->eventFD.put(count);
 }
 
-auto Epoll::getRuntimes() const -> std::map<std::string, RuntimeInfo>{
+auto Epoll::getRuntimes() const -> std::map<std::string, RuntimeInfo> {
 	std::map<std::string, RuntimeInfo> runtimes;
 	std::shared_lock lock{pimpl->infosMutex};
 	for (auto const& info : pimpl->infos) {
