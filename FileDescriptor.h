@@ -45,6 +45,12 @@ struct FileDescriptor {
 		return fd;
 	}
 
+    int release() noexcept {
+        int fd_ = fd;
+        fd = -1;
+        return fd_;
+    }
+
 	void close() noexcept {
 		if (valid()) {
 			::close(*this);
