@@ -14,6 +14,9 @@ struct FileDescriptor {
 
 	FileDescriptor(int _fd=-1) : fd(_fd) {}
 
+    FileDescriptor(FileDescriptor const&) = delete;
+    FileDescriptor& operator=(FileDescriptor const&) = delete;
+    
 	FileDescriptor(FileDescriptor&& other) noexcept {
 		fd = other.fd;
 		other.fd = -1;
