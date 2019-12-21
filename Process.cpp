@@ -76,7 +76,7 @@ int Process::wait() {
         if (w == -1) {
             throw std::runtime_error("waitpid returned -1 " + std::string(std::strerror(errno)));
         }
-    } while (not WIFEXITED(wstatus) && not WIFSIGNALED(wstatus));
+    } while (not WIFEXITED(wstatus) and not WIFSIGNALED(wstatus));
     childPID = 0;
     return WEXITSTATUS(wstatus);
 }
