@@ -59,6 +59,9 @@ Process::Process(std::string_view command, std::vector<std::string> const& args)
 }
 
 Process::~Process() {
+    if (std::current_exception()) { // if there is an exception in flight kill the subprocess
+        kill(SIGKILL);
+    }
     wait();
     stdin.close();
     stdout.close();
