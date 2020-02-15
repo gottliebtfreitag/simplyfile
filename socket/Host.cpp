@@ -1,7 +1,7 @@
 
 #include "Host.h"
 #include <cstring>
-#include <errno.h>
+#include <cerrno>
 #include <stdexcept>
 #include <netdb.h>
 #include <sys/un.h>

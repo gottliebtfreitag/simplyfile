@@ -1,6 +1,6 @@
 #include <sys/ioctl.h>
 #include <cstring>
-#include <errno.h>
+#include <cerrno>
 #include "Socket.h"
 #include <unistd.h>
 #include <sys/un.h>

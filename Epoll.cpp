@@ -5,7 +5,7 @@
 #include <vector>
 #include <atomic>
 
-#include <errno.h>
+#include <cerrno>
 #include <cstring>
 #include <iostream>
 #include <stdexcept>

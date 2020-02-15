@@ -3,6 +3,9 @@
 #include <cstring>
 #include <time.h>
 
+#include <cerrno>
+#include <string>
+
 
 namespace simplyfile {
 

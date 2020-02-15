@@ -3,6 +3,7 @@
 #include <linux/limits.h>
 
 #include <iostream>
+#include <array>
 
 namespace simplyfile {
 

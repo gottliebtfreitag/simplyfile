@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <string.h>        // String function definitions
 #include <unistd.h>        // UNIX standard function definitions
-#include <errno.h>         // Error number definitions
+#include <cerrno>          // Error number definitions
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <inttypes.h>

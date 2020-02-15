@@ -5,6 +5,7 @@
 #include <memory>
 #include <sys/epoll.h>
 #include <chrono>
+#include <string>
 
 namespace simplyfile
 {

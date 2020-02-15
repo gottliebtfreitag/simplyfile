@@ -1,5 +1,6 @@
 #include "FileDescriptor.h"
 #include <unistd.h>
+#include <string_view>
 
 namespace simplyfile {
 
