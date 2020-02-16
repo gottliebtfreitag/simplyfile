@@ -33,7 +33,7 @@ struct ServerSocket : FileDescriptor {
 
 	virtual ~ServerSocket();
 
-	ClientSocket accept();
+	ClientSocket accept() const;
 	void listen();
 protected:
 	Host host;
