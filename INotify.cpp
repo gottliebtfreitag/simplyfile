@@ -2,6 +2,7 @@
 
 #include <linux/limits.h>
 
+#include <cerrno>
 #include <iostream>
 #include <array>
 
@@ -18,7 +19,10 @@ void INotify::watch(std::string const& _path, uint32_t mask) {
 
 auto INotify::readEvent() -> std::optional<INotify::Result> {
 	std::array<std::byte, sizeof(inotify_event) + NAME_MAX + 1> buffer;
-    read(*this, buffer.data(), buffer.size());
+    int r = read(*this, buffer.data(), buffer.size());
+    if (r <= 0 and (errno == EAGAIN || errno == EWOULDBLOCK)) {
+        return {};
+    }
 	inotify_event const& event = *reinterpret_cast<inotify_event const*>(buffer.data());
 
 	if (0 == event.wd) {
