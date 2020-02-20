@@ -8,7 +8,7 @@
 namespace simplyfile {
 
 struct Timer : FileDescriptor {
-	using FileDescriptor::FileDescriptor;
+	Timer(int flags=TFD_NONBLOCK);
 	Timer(std::chrono::nanoseconds duration, bool oneShot=false, int flags=TFD_NONBLOCK);
 
     Timer(Timer&&) noexcept = default;

@@ -22,6 +22,9 @@ void normalize(struct timespec& time) {
 }
 }
 
+Timer::Timer(int flags) 
+    : FileDescriptor(::timerfd_create(CLOCK_MONOTONIC, flags))
+{}
 
 Timer::Timer(std::chrono::nanoseconds duration, bool oneShot, int flags)
 	: FileDescriptor(::timerfd_create(CLOCK_MONOTONIC, flags))
