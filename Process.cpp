@@ -1,6 +1,7 @@
 #include "Process.h"
 #include <cstring>
 #include <memory>
+#include <stdexcept>
 
 #include <sys/socket.h>
 #include <sys/wait.h>

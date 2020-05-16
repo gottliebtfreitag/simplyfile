@@ -1,7 +1,9 @@
+#include "Socket.h"
+
 #include <sys/ioctl.h>
 #include <cstring>
 #include <cerrno>
-#include "Socket.h"
+#include <stdexcept>
 #include <unistd.h>
 #include <sys/un.h>
 
