@@ -121,7 +121,7 @@ Epoll::Epoll()
 	if (not valid()) {
 		throw std::runtime_error("cannot create epollfd");
 	}
-	addFD(pimpl->eventFD, [=](int){
+	addFD(pimpl->eventFD, [this](int){
 		pimpl->eventFD.get();
 		modFD(pimpl->eventFD, EPOLLIN|EPOLLONESHOT);
 	}, EPOLLIN|EPOLLONESHOT, "self_wakeup");
