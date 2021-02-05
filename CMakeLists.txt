@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(cndl)
+project(simplyfile)
 include(GNUInstallDirs)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -36,10 +36,12 @@ install(FILES
     SerialPort.h
     ThreadTime.h
     Timer.h
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/simplyfile)
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 install(FILES
     socket/Host.h
     socket/Socket.h
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/simplyfile/socket)
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/socket)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/simplyfile.pc
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pkgconfig)
+install(FILES LICENSE
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/licenses/${PROJECT_NAME})
