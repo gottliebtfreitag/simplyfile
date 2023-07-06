@@ -17,6 +17,8 @@ struct INotify : FileDescriptor {
 
 	// check inotify for mask meaning
 	void watch(std::string const& _path, uint32_t mask);
+	void unwatch(std::string const& _path);
+	void unwatch_all();
 
 	std::map<int, std::string> mIDs;
 
