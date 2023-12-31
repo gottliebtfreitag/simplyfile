@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2018 Lutz Freitag
+// SPDX-License-Identifier: MIT
 #include "INotify.h"
 
 #include <linux/limits.h>

@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2018 Lutz Freitag
+# SPDX-License-Identifier: MIT
 libdir=@CMAKE_INSTALL_PREFIX@/lib
 includedir=@CMAKE_INSTALL_PREFIX@/include/simplyfile
 
