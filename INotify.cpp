@@ -4,9 +4,9 @@
 
 #include <linux/limits.h>
 
-#include <cerrno>
-#include <iostream>
+#include <algorithm>
 #include <array>
+#include <cerrno>
 
 namespace simplyfile {
 
